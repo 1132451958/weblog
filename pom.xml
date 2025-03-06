@@ -22,15 +22,73 @@
         <!-- Maven 相关 -->
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <!-- 依赖包版本 -->
+        <lombok.version>1.18.28</lombok.version>
+        <guava.version>31.1-jre</guava.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+
+        <jackson.version>2.15.2</jackson.version>
     </properties>
+    <modules>
+        <!-- 管理后台 -->
+        <module>weblog-module-admin</module>
+        <module>weblog-web</module>
+        <!-- 通用模块 -->
+        <module>weblog-module-common</module>
+    </modules>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.chai</groupId>
+                <artifactId>weblog-module-admin</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.chai</groupId>
+                <artifactId>weblog-module-common</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 常用工具库 -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+
+            <!-- Jackson -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-
     <build>
-        <plugins>
-        </plugins>
+        <!-- 统一插件管理 -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <excludes>
+                            <exclude>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
     <repositories>
         <repository>
