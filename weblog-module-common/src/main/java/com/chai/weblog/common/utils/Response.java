@@ -1,15 +1,11 @@
 package com.chai.weblog.common.utils;
 
+import com.chai.weblog.common.exception.BaseExceptionInterface;
+import com.chai.weblog.common.exception.BizException;
 import lombok.Data;
 
 import java.io.Serializable;
 
-/**
- * @author: 犬小哈
- * @url: www.quanxiaoha.com
- * @date: 2023-08-11 19:50
- * @description: 响应参数工具类
- **/
 @Data
 public class Response<T> implements Serializable {
 
@@ -53,6 +49,21 @@ public class Response<T> implements Serializable {
         response.setSuccess(false);
         response.setErrorCode(errorCode);
         response.setMessage(errorMessage);
+        return response;
+    }
+    public static <T> Response<T> fail(BizException bizException) {
+        Response<T> response = new Response<>();
+        response.setSuccess(false);
+        response.setErrorCode(bizException.getErrorCode());
+        response.setMessage(bizException.getErrorMessage());
+        return response;
+    }
+
+    public static <T> Response<T> fail(BaseExceptionInterface exceptionInterface) {
+        Response<T> response = new Response<>();
+        response.setSuccess(false);
+        response.setErrorCode(exceptionInterface.getErrorCode());
+        response.setMessage(exceptionInterface.getErrorMessage());
         return response;
     }
 }

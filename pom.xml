@@ -16,6 +16,10 @@
     </parent>
     <properties>
         <!-- 项目版本号 -->
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <minio.version>8.2.1</minio.version>
+        <p6spy.version>3.9.1</p6spy.version>
+        <jjwt.version>0.11.2</jjwt.version>
         <revision>0.0.1-SNAPSHOT</revision>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,6 +32,9 @@
         <commons-lang3.version>3.12.0</commons-lang3.version>
 
         <jackson.version>2.15.2</jackson.version>
+        <knife4j.version>4.3.0</knife4j.version>
+        <mybatis-plus.version>3.5.2</mybatis-plus.version>
+
     </properties>
     <modules>
         <!-- 管理后台 -->
@@ -35,9 +42,44 @@
         <module>weblog-web</module>
         <!-- 通用模块 -->
         <module>weblog-module-common</module>
+        <!-- JWT 模块 -->
+        <module>weblog-module-jwt</module>
     </modules>
     <dependencyManagement>
         <dependencies>
+            <!--   JWT   -->
+            <!-- Mapstruct 属性映射 -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.chai</groupId>
+                <artifactId>weblog-module-jwt</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>p6spy</groupId>
+                <artifactId>p6spy</artifactId>
+                <version>${p6spy.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.chai</groupId>
                 <artifactId>weblog-module-admin</artifactId>
@@ -69,12 +111,53 @@
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
+
+            <!-- knife4j（API 文档工具） -->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+
+            <!-- Mybatis Plus -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <!-- 对象存储 Minio -->
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>${minio.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>
         <!-- 统一插件管理 -->
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>${java.version}</source> <!-- 根据你的 JDK 版本进行调整 -->
+                        <target>${java.version}</target> <!-- 根据你的 JDK 版本进行调整 -->
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version> <!-- 使用时请检查最新版本 -->
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
