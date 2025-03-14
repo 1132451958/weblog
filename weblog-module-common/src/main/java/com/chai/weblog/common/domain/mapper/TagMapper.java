@@ -1,9 +1,11 @@
 package com.chai.weblog.common.domain.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chai.weblog.common.domain.dos.TagDO;
+import com.chai.weblog.common.domain.dos.TagRelUserDo;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,5 +40,11 @@ public interface TagMapper extends BaseMapper<TagDO> {
         wrapper.like(TagDO::getName, key).orderByDesc(TagDO::getCreateTime);
 
         return selectList(wrapper);
+    }
+
+    default TagDO selectByName( String tagName){
+        QueryWrapper<TagDO> wrapper = new QueryWrapper();
+        wrapper.eq("name" , tagName);
+        return selectOne(wrapper);
     }
 }

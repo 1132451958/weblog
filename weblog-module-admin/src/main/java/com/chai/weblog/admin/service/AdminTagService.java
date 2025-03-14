@@ -1,8 +1,6 @@
 package com.chai.weblog.admin.service;
 
-import com.chai.weblog.admin.model.vo.tag.DeleteTagReqVO;
-import com.chai.weblog.admin.model.vo.tag.FindTagPageListReqVO;
-import com.chai.weblog.admin.model.vo.tag.SearchTagsReqVO;
+import com.chai.weblog.admin.model.vo.tag.*;
 import com.chai.weblog.common.model.vo.tag.AddTagReqVO;
 import com.chai.weblog.common.utils.*;
 
@@ -34,4 +32,22 @@ public interface AdminTagService {
      * @return
      */
     Response deleteTag(DeleteTagReqVO deleteTagReqVO);
+
+    /**
+     * 查询标签 Select 列表数据
+     * @return
+     */
+    Response findTagSelectList();
+
+    /**
+     * 根据用户ID订阅标签
+     * @return
+     */
+    Response subSubscribeTagByUserId(UserSubscribeTagReqVo userSubscribeTagReqVo);
+
+    /**
+     * 根据用户id查询用户订阅标签
+     * @return
+     */
+    Response searchTagsByUserId(UserSubscribeSearchReqVo userSubscribeSearchReqVo);
 }

@@ -1,9 +1,6 @@
 package com.chai.weblog.admin.controller;
 
-import com.chai.weblog.admin.model.vo.category.DeleteCategoryReqVO;
-import com.chai.weblog.admin.model.vo.tag.DeleteTagReqVO;
-import com.chai.weblog.admin.model.vo.tag.FindTagPageListReqVO;
-import com.chai.weblog.admin.model.vo.tag.SearchTagsReqVO;
+import com.chai.weblog.admin.model.vo.tag.*;
 import com.chai.weblog.admin.service.AdminTagService;
 import com.chai.weblog.common.aspect.ApiOperationLog;
 import com.chai.weblog.common.model.vo.tag.AddTagReqVO;
@@ -55,6 +52,27 @@ public class AdminTagController {
     @ApiOperationLog(description = "标签模糊查询")
     public Response searchTags(@RequestBody @Validated SearchTagsReqVO searchTagsReqVO) {
         return tagService.searchTags(searchTagsReqVO);
+    }
+
+
+    @PostMapping("/select/list")
+    @ApiOperation(value = "查询标签 Select 列表数据")
+    @ApiOperationLog(description = "查询标签 Select 列表数据")
+    public Response findTagSelectList() {
+        return tagService.findTagSelectList();
+    }
+    @PostMapping("/subscribe/id")
+    @ApiOperation(value = "用户订阅标签服务")
+    @ApiOperationLog(description = "根据UserId与tagID订阅")
+    public Response findTagIdByTagId(@RequestBody UserSubscribeTagReqVo userSubscribeTagReqVo){
+        return tagService.subSubscribeTagByUserId(userSubscribeTagReqVo);
+    }
+
+    @PostMapping("/subscribe/search")
+    @ApiOperation(value = "查询用户订阅的标签服务")
+    @ApiOperationLog(description = "根据UserId查询订阅的标签列表")
+    public Response findTagIdByTagId(@RequestBody UserSubscribeSearchReqVo userSubscribeSearchReqVo){
+        return tagService.searchTagsByUserId(userSubscribeSearchReqVo);
     }
 
 
