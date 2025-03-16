@@ -1,6 +1,8 @@
 package com.chai.weblog.admin.service;
 
 import com.chai.weblog.admin.model.vo.article.*;
+import com.chai.weblog.common.domain.dos.ArticleDO;
+import com.chai.weblog.common.domain.dos.ArticleHotScoreDO;
 import com.chai.weblog.common.utils.Response;
 
 public interface AdminArticleService {
@@ -37,4 +39,6 @@ public interface AdminArticleService {
      * @return
      */
     Response updateArticle(UpdateArticleReqVO updateArticleReqVO);
+
+
 }

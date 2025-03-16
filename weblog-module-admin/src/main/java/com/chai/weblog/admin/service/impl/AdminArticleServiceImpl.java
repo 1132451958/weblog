@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chai.weblog.admin.convert.ArticleDetailConvert;
 import com.chai.weblog.admin.model.vo.article.*;
 import com.chai.weblog.admin.service.AdminArticleService;
+import com.chai.weblog.admin.service.ArticleHotService;
 import com.chai.weblog.common.domain.dos.*;
 import com.chai.weblog.common.domain.mapper.*;
 import com.chai.weblog.common.enums.ResponseCodeEnum;
@@ -29,7 +30,8 @@ import static com.chai.weblog.common.enums.ResponseCodeEnum.ARTICLE_NOT_FOUND;
 @Service
 @Slf4j
 public class AdminArticleServiceImpl implements AdminArticleService {
-
+    @Autowired
+    private ArticleHotScoreMapper articleHotScoreMapper;
     @Autowired
     private ArticleMapper articleMapper;
     @Autowired
@@ -42,6 +44,8 @@ public class AdminArticleServiceImpl implements AdminArticleService {
     private TagMapper tagMapper;
     @Autowired
     private ArticleTagRelMapper articleTagRelMapper;
+    @Autowired
+    private ArticleHotService articleHotService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -57,7 +61,7 @@ public class AdminArticleServiceImpl implements AdminArticleService {
                 .updateTime(LocalDateTime.now())
                 .build();
         int count = articleMapper.updateById(articleDO);
-
+        articleHotService.updateHotArticle(articleDO);
         // 根据更新是否成功，来判断该文章是否存在
         if (count == 0) {
             log.warn("==> 该文章不存在, articleId: {}", articleId);
@@ -98,6 +102,8 @@ public class AdminArticleServiceImpl implements AdminArticleService {
 
         return Response.success();
     }
+
+
 
 
     /**
@@ -147,7 +153,8 @@ public class AdminArticleServiceImpl implements AdminArticleService {
                 .updateTime(LocalDateTime.now())
                 .build();
         articleMapper.insert(articleDO);
-
+        //同步更新热度表
+        articleHotService.updateHotArticle(articleDO);
         // 拿到插入记录的主键 ID
         Long articleId = articleDO.getId();
 
@@ -335,4 +342,7 @@ public class AdminArticleServiceImpl implements AdminArticleService {
 
         return Response.success(vo);
     }
+
+
+
 }
