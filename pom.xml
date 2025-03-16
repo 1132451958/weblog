@@ -35,6 +35,7 @@
         <jackson.version>2.15.2</jackson.version>
         <knife4j.version>4.3.0</knife4j.version>
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
+        <rocketmq.version>2.2.2</rocketmq.version>
 
     </properties>
     <modules>
@@ -133,6 +134,13 @@
                 <artifactId>minio</artifactId>
                 <version>${minio.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
     <build>

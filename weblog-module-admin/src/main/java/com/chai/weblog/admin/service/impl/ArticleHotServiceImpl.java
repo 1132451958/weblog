@@ -34,25 +34,6 @@ public class ArticleHotServiceImpl implements ArticleHotService {
     @Autowired
     RedisTemplate<String, Object> redisTemplate;
 
-    /**
-     * 获得前10条热度最高的文章信息
-     *
-     * @return
-     */
-    public Response getTopTenArticle() {
-        List<ArticleHotScoreDO> articleHotScoreDOS = articleHotScoreMapper.listTenHotScoresOrderByHotScore();
-        if (Objects.isNull(articleHotScoreDOS)) {
-            throw new BizException(ResponseCodeEnum.ARTICLE_NOT_FOUND);
-        }
-        List<ArticleHotTenRspVo> articleHotTenRspVos = new ArrayList<>();
-        articleHotTenRspVos = articleHotScoreDOS.stream().map(
-                articleHotDo -> ArticleHotTenRspVo.builder()
-                        .articleName(articleHotDo.getTitle())
-                        .hot(articleHotDo.getHotScore()).build()
-        ).collect(Collectors.toList());
-        return Response.success(articleHotTenRspVos);
-    }
-
     @Override
     public boolean updateHotArticle(ArticleDO articleDO) {
         // 2. 更新文章热度表
@@ -115,14 +96,23 @@ public class ArticleHotServiceImpl implements ArticleHotService {
                 Boolean added = redisTemplate.opsForZSet().add(HOT_KEY, "article:" + article.getArticleId(), article.getHotScore());
                 System.out.println("文章ID: " + article.getArticleId() + ", 是否插入成功: " + added);
             }
-
-// 4. 验证 Redis 中的数据
-            Set<ZSetOperations.TypedTuple<Object>> articlesInRedis = redisTemplate.opsForZSet().rangeWithScores(HOT_KEY, 0, -1);
-            if (articlesInRedis != null) {
-                for (ZSetOperations.TypedTuple<Object> tuple : articlesInRedis) {
-                    System.out.println("Redis 中的文章: " + tuple.getValue() + ", 热度值: " + tuple.getScore());
-                }
-            }
         }
+    }
+    /**
+     * 获得前10条热度最高的文章信息
+     *
+     * @return
+     */
+    @Override
+    public Response getTopTenArticle() {
+        Set<ZSetOperations.TypedTuple<Object>> redisHotScoreDOs = redisTemplate.opsForZSet().reverseRangeWithScores(HOT_KEY, 0, 9);
+        List<ArticleHotTenRspVo> articleHotTenRspVos = new ArrayList<>();
+        articleHotTenRspVos = redisHotScoreDOs.stream().map(
+                redisHotDo -> ArticleHotTenRspVo.builder()
+                        .articleName((String)redisHotDo.getValue())
+                        .hot(redisHotDo.getScore()).build()
+
+        ).collect(Collectors.toList());
+        return Response.success(articleHotTenRspVos);
     }
 }
