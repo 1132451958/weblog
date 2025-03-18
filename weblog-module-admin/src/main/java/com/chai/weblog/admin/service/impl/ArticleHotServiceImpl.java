@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.chai.weblog.admin.message.KafkaConstant.Hot_Article;
 import static com.chai.weblog.common.redisKey.RedisConstant.HOT_KEY;
 @Slf4j
 @Service
@@ -33,6 +35,8 @@ public class ArticleHotServiceImpl implements ArticleHotService {
     ArticleHotScoreMapper articleHotScoreMapper;
     @Autowired
     RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
     public boolean updateHotArticle(ArticleDO articleDO) {
@@ -87,7 +91,10 @@ public class ArticleHotServiceImpl implements ArticleHotService {
                     new QueryWrapper<ArticleHotScoreDO>().orderByDesc("hot_score").last("LIMIT 10")
             );
             System.out.println("查询到的文章数量: " + hotArticles.size());
-
+            //推送热门文章到消息队列
+            for(ArticleHotScoreDO articleHotScoreDO : hotArticles){
+                kafkaTemplate.send(Hot_Article, articleHotScoreDO.getTitle());
+            }
 // 2. 清空旧数据
             redisTemplate.delete(HOT_KEY);
 
