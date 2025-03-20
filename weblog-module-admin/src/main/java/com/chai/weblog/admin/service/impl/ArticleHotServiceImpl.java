@@ -16,14 +16,17 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import static com.chai.weblog.admin.message.KafkaConstant.Hot_Article;
@@ -37,7 +40,8 @@ public class ArticleHotServiceImpl implements ArticleHotService {
     RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
-
+    @Resource(name = "taskExecutor")
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
     @Override
     public boolean updateHotArticle(ArticleDO articleDO) {
         // 2. 更新文章热度表
@@ -84,8 +88,11 @@ public class ArticleHotServiceImpl implements ArticleHotService {
             // 3. 更新热度值
             hotScoreDO.setHotScore(hotScore);
             hotScoreDO.setUpdatedAt(LocalDateTime.now());
-            articleHotScoreMapper.updateById(hotScoreDO);
-
+            //4.使用线程池异步更新数据库
+            threadPoolTaskExecutor.submit(() ->{
+                articleHotScoreMapper.updateById(hotScoreDO);
+                System.out.println("更新数据库成功");
+            } );
             // 1. 查询热度值最高的 10 篇文章
             List<ArticleHotScoreDO> hotArticles = articleHotScoreMapper.selectList(
                     new QueryWrapper<ArticleHotScoreDO>().orderByDesc("hot_score").last("LIMIT 10")
